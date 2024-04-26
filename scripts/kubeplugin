@@ -1,0 +1,36 @@
+#!/bin/bash
+# Define command-line arguments
+NAMESPACE="$1"
+describePods(){
+    echo "---------------------------------------------------------------------------------------------------"
+    printf '%-20s' "Namespace"
+    printf '%-20s' "Resource"
+    printf '%-40s' "Name"
+    printf '%-10s' "CPU"
+    printf '%-10s' "Memory"
+    echo
+    echo "---------------------------------------------------------------------------------------------------"
+    # Retrieve resource usage statistics from Kubernetes
+    kubectl top pod -n $NAMESPACE | tail -n +2 | while read -r line
+        do
+            # Extract CPU and memory usage from the output
+            NAME=$(echo $line | awk '{print $1}')
+            CPU=$(echo $line | awk '{print $2}')
+            MEMORY=$(echo $line | awk '{print $3}')
+            # Output the statistics to the console
+            # echo "$NAMESPACE, POD, $NAME, $CPU, $MEMORY"
+            printf '%-20s' "$NAMESPACE"
+            printf '%-20s' "POD"
+            printf '%-40s' "$NAME"
+            printf '%-10s' "$CPU"
+            printf '%-10s' "$MEMORY"
+            echo
+        done
+}
+while true
+do
+clear
+echo "Press [CTRL+C] to stop.."
+describePods
+sleep 5
+done
